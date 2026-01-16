@@ -11,7 +11,7 @@ class UI:
         self.font_medium = pygame.font.Font(None, 48)
         self.font_small = pygame.font.Font(None, 32)
     
-    def draw_info_panel(self, score, high_score, snake_length, speed):
+    def draw_info_panel(self, score, high_score, snake_length, speed, sound_on, music_on, combo_active):
         """게임 정보 패널 그리기"""
         # 패널 배경
         panel_rect = pygame.Rect(0, 0, WINDOW_WIDTH, INFO_PANEL_HEIGHT)
@@ -37,6 +37,30 @@ class UI:
         # 속도 표시
         speed_text = self.font_small.render(f"Speed: {speed}", True, WHITE)
         self.screen.blit(speed_text, (520, 5))
+        
+        # Sound/Music 상태 표시
+        sound_status = "ON" if sound_on else "OFF"
+        sound_color = GREEN if sound_on else RED
+        sound_text = self.font_small.render(f"S:{sound_status}", True, sound_color)
+        self.screen.blit(sound_text, (650, 5))
+        
+        music_status = "ON" if music_on else "OFF"
+        music_color = GREEN if music_on else RED
+        music_text = self.font_small.render(f"M:{music_status}", True, music_color)
+        self.screen.blit(music_text, (730, 5))
+        
+        # COMBO 활성화 표시 (반짝이는 효과)
+        if combo_active:
+            # 빠른 펄스로 반짝임 (0.3초 주기)
+            pulse = abs(pygame.time.get_ticks() % 300 - 150) / 150.0
+            # 주황색과 노란색 사이를 진동
+            r = int(255)
+            g = int(165 + 90 * pulse)  # 165 ~ 255
+            b = int(0)
+            combo_color = (r, g, b)
+            combo_text = self.font_medium.render("COMBO!", True, combo_color)
+            combo_rect = combo_text.get_rect(center=(WINDOW_WIDTH // 2, INFO_PANEL_HEIGHT // 2))
+            self.screen.blit(combo_text, combo_rect)
     
     def draw_game_over_screen(self, score, high_score, food_eaten, play_time):
         """게임 오버 화면 그리기"""

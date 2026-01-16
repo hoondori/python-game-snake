@@ -135,7 +135,30 @@ class Game:
                 GRID_SIZE
             )
             # 머리는 밝은 녹색, 몸통은 어두운 녹색
-            color = LIGHT_GREEN if i == 0 else DARK_GREEN
+            if i == 0:
+                base_color = LIGHT_GREEN
+            else:
+                base_color = DARK_GREEN
+            
+            # 콤보 활성화 시 반짝이는 효과
+            if self.score_manager.is_combo_active():
+                # 0.0 ~ 1.0 사이로 진동하는 값 (더 빠른 주기)
+                pulse = abs(pygame.time.get_ticks() % 300 - 150) / 150.0
+                # 밝기 조절 (0.5 ~ 1.3) - 더 강한 효과
+                brightness = 0.5 + 0.8 * pulse
+                # 색상에 노란색 톤 추가
+                if i == 0:  # 머리
+                    r = min(255, int(base_color[0] * brightness + 50 * pulse))
+                    g = min(255, int(base_color[1] * brightness + 50 * pulse))
+                    b = int(base_color[2] * brightness)
+                else:  # 몸통
+                    r = min(255, int(base_color[0] * brightness + 30 * pulse))
+                    g = min(255, int(base_color[1] * brightness + 30 * pulse))
+                    b = int(base_color[2] * brightness)
+                color = (r, g, b)
+            else:
+                color = base_color
+            
             pygame.draw.rect(game_surface, color, rect)
         
         # 먹이 그리기 (빨간색 + 펄스 효과)
@@ -160,7 +183,10 @@ class Game:
             self.score_manager.get_score(),
             self.score_manager.get_high_score(),
             len(self.snake.body),
-            self.current_fps
+            self.current_fps,
+            self.sound_manager.sound_enabled,
+            self.sound_manager.music_enabled,
+            self.score_manager.is_combo_active()
         )
         
         # 일시정지 화면

@@ -15,7 +15,7 @@ class ScoreManager:
         self.end_time = None  # 게임 종료 시간
         self.last_food_time = time.time()
         self.combo_active = False
-        self.combo_timeout = 3.0  # 3초 이내에 먹어야 콤보
+        self.combo_timeout = 10.0  # 10초 이내에 먹어야 콤보
     
     def load_high_score(self):
         """최고 점수 로드"""
@@ -83,6 +83,11 @@ class ScoreManager:
     
     def is_combo_active(self):
         """콤보 활성 여부 반환"""
+        # 콤보가 활성화되어 있더라도 10초가 지나면 비활성화
+        if self.combo_active:
+            current_time = time.time()
+            if current_time - self.last_food_time > self.combo_timeout:
+                self.combo_active = False
         return self.combo_active
     
     def reset(self):
