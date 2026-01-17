@@ -200,3 +200,78 @@ def test_get_head(snake):
     """머리 위치 반환 테스트"""
     head = snake.get_head()
     assert head == snake.body[0]
+
+
+def test_portal_mode_left_wall():
+    """Portal 모드: 왼쪽 벽 통과 테스트"""
+    snake = Snake()
+    snake.body = [(0, 15), (1, 15), (2, 15)]
+    snake.direction = LEFT
+    
+    # Portal 모드로 이동
+    snake.move(portal_mode=True)
+    
+    # 오른쪽 끝에서 나타나야 함
+    assert snake.body[0] == (GRID_WIDTH - 1, 15)
+
+
+def test_portal_mode_right_wall():
+    """Portal 모드: 오른쪽 벽 통과 테스트"""
+    snake = Snake()
+    snake.body = [(GRID_WIDTH - 1, 15), (GRID_WIDTH - 2, 15), (GRID_WIDTH - 3, 15)]
+    snake.direction = RIGHT
+    
+    # Portal 모드로 이동
+    snake.move(portal_mode=True)
+    
+    # 왼쪽 끝에서 나타나야 함
+    assert snake.body[0] == (0, 15)
+
+
+def test_portal_mode_top_wall():
+    """Portal 모드: 위쪽 벽 통과 테스트"""
+    snake = Snake()
+    snake.body = [(15, 0), (15, 1), (15, 2)]
+    snake.direction = UP
+    
+    # Portal 모드로 이동
+    snake.move(portal_mode=True)
+    
+    # 아래쪽 끝에서 나타나야 함
+    assert snake.body[0] == (15, GRID_HEIGHT - 1)
+
+
+def test_portal_mode_bottom_wall():
+    """Portal 모드: 아래쪽 벽 통과 테스트"""
+    snake = Snake()
+    snake.body = [(15, GRID_HEIGHT - 1), (15, GRID_HEIGHT - 2), (15, GRID_HEIGHT - 3)]
+    snake.direction = DOWN
+    
+    # Portal 모드로 이동
+    snake.move(portal_mode=True)
+    
+    # 위쪽 끝에서 나타나야 함
+    assert snake.body[0] == (15, 0)
+
+
+def test_normal_mode_vs_portal_mode():
+    """일반 모드와 Portal 모드 비교"""
+    # 일반 모드
+    snake1 = Snake()
+    snake1.body = [(0, 15), (1, 15), (2, 15)]
+    snake1.direction = LEFT
+    snake1.move(portal_mode=False)
+    
+    # 벽 밖으로 나감
+    assert snake1.body[0] == (-1, 15)
+    assert snake1.check_wall_collision() == True
+    
+    # Portal 모드
+    snake2 = Snake()
+    snake2.body = [(0, 15), (1, 15), (2, 15)]
+    snake2.direction = LEFT
+    snake2.move(portal_mode=True)
+    
+    # 반대편으로 이동
+    assert snake2.body[0] == (GRID_WIDTH - 1, 15)
+    assert snake2.check_wall_collision() == False

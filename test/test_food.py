@@ -1,5 +1,6 @@
 """Food 클래스 단위 테스트"""
 import pytest
+import time
 
 from food import Food
 from constants import *
@@ -16,6 +17,10 @@ def test_food_initialization():
     x, y = food.position
     assert 0 <= x < GRID_WIDTH
     assert 0 <= y < GRID_HEIGHT
+    
+    # Golden 속성 초기화
+    assert hasattr(food, 'is_golden')
+    assert hasattr(food, 'spawn_time')
 
 
 def test_random_position_generation():
@@ -98,8 +103,67 @@ def test_respawn():
     food.spawn()
     second_position = food.position
     
-    # 위치가 변경될 수 있음 (랜덤이므로 항상 다르지는 않음)
-    # 하지만 유효한 위치여야 함
+    # 위치가 유효해야 함
     x, y = second_position
     assert 0 <= x < GRID_WIDTH
     assert 0 <= y < GRID_HEIGHT
+
+
+def test_golden_apple_probability():
+    """Golden Apple 생성 확률 테스트"""
+    golden_count = 0
+    total = 1000
+    
+    for _ in range(total):
+        food = Food()
+        if food.is_golden:
+            golden_count += 1
+    
+    # 10% 확률이므로 대략 5~15% 범위 내여야 함
+    ratio = golden_count / total
+    assert 0.05 <= ratio <= 0.15
+
+
+def test_golden_apple_value():
+    """Golden Apple 점수 테스트"""
+    # Golden Apple 생성 (강제)
+    food = Food()
+    food.is_golden = True
+    assert food.get_value() == GOLDEN_APPLE_SCORE
+    
+    # 일반 먹이
+    food.is_golden = False
+    assert food.get_value() == NORMAL_FOOD_SCORE
+
+
+def test_golden_apple_timeout():
+    """Golden Apple 타이머 테스트"""
+    food = Food()
+    food.is_golden = True
+    food.spawn_time = time.time() - 11  # 11초 전
+    
+    # 10초 초과했으므로 재생성 필요
+    assert food.should_respawn() == True
+    
+    # 일반 먹이는 타이머 무시
+    food.is_golden = False
+    assert food.should_respawn() == False
+
+
+def test_spawn_avoiding_obstacles():
+    """장애물과 겹치지 않는 위치에 생성"""
+    snake_body = [(10, 10)]
+    obstacle_positions = [(5, 5), (6, 6), (7, 7)]
+    
+    food = Food()
+    for _ in range(20):
+        food.spawn(snake_body, obstacle_positions)
+        
+        # 장애물과 겹치지 않아야 함
+        assert food.position not in obstacle_positions
+        assert food.position not in snake_body
+        
+        # 유효한 위치여야 함
+        x, y = food.position
+        assert 0 <= x < GRID_WIDTH
+        assert 0 <= y < GRID_HEIGHT
