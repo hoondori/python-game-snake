@@ -1,29 +1,29 @@
 """게임 로직 관리 클래스"""
 import pygame
 from constants import *
-from snake import Snake
-from food import Food
-from obstacle import Obstacle
-from ui import UI
-from score_manager import ScoreManager
-from sound_manager import SoundManager
+from core.snake import Snake
+from core.food import Food
+from core.obstacle import Obstacle
+from ui.hud import UI
+from managers.score_manager import ScoreManager
+from managers.sound_manager import SoundManager
 from config import ConfigManager
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, screen=None, difficulty='normal', portal_mode=False, sound_enabled=True, music_enabled=True):
         """게임 초기화"""
-        pygame.init()
-        
-        # 화면 설정
-        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("Snake Game - Version 3.0")
+        if screen is None:
+            pygame.init()
+            self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+            pygame.display.set_caption("Snake Game - Version 3.1")
+            self.own_screen = True
+        else:
+            self.screen = screen
+            self.own_screen = False
         
         # 시계 설정 (FPS 제어)
         self.clock = pygame.time.Clock()
-        
-        # 설정 관리자
-        self.config_manager = ConfigManager()
         
         # 게임 객체
         self.snake = Snake()
@@ -33,11 +33,11 @@ class Game:
         self.sound_manager = SoundManager()
         
         # 설정 적용
-        self.sound_manager.sound_enabled = self.config_manager.get('sound_enabled', True)
-        self.sound_manager.music_enabled = self.config_manager.get('music_enabled', True)
+        self.sound_manager.sound_enabled = sound_enabled
+        self.sound_manager.music_enabled = music_enabled
         
         # 난이도 설정
-        self.difficulty = self.config_manager.get_difficulty()
+        self.difficulty = difficulty
         self.apply_difficulty_settings()
         
         # 장애물 생성 (난이도에 따라)
@@ -49,7 +49,7 @@ class Game:
         self.food.spawn(self.snake.body, obstacle_positions)
         
         # 포탈 모드
-        self.portal_mode = self.config_manager.is_portal_mode()
+        self.portal_mode = portal_mode
         
         # 게임 상태
         self.running = True
@@ -410,4 +410,10 @@ class Game:
             # FPS 제어
             self.clock.tick(self.current_fps)
         
-        pygame.quit()
+        # 배경 음악 정지
+        if self.sound_manager.music_enabled:
+            self.sound_manager.stop_background_music()
+        
+        # 자체 화면인 경우만 pygame.quit() 호출
+        if self.own_screen:
+            pygame.quit()
