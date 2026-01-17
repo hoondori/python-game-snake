@@ -29,13 +29,26 @@ class Snake:
         if new_direction != opposite:
             self.direction = new_direction
     
-    def move(self):
-        """뱀을 현재 방향으로 이동"""
+    def move(self, portal_mode=False):
+        """
+        뱀을 현재 방향으로 이동
+        
+        Args:
+            portal_mode: Portal 모드 활성화 여부
+        """
         # 현재 머리 위치
         head_x, head_y = self.body[0]
         
         # 새로운 머리 위치 계산
-        new_head = (head_x + self.direction[0], head_y + self.direction[1])
+        new_head_x = head_x + self.direction[0]
+        new_head_y = head_y + self.direction[1]
+        
+        # Portal 모드: 벽을 넘으면 반대편으로
+        if portal_mode:
+            new_head_x = new_head_x % GRID_WIDTH
+            new_head_y = new_head_y % GRID_HEIGHT
+        
+        new_head = (new_head_x, new_head_y)
         
         # 새 머리를 몸통 앞에 추가
         self.body.insert(0, new_head)
