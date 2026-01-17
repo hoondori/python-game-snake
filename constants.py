@@ -59,3 +59,50 @@ UP = (0, -1)
 DOWN = (0, 1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
+
+# 파워업 설정
+POWERUP_SPEED_BOOST = 'speed_boost'
+POWERUP_SLOW_MOTION = 'slow_motion'
+POWERUP_INVINCIBLE = 'invincible'
+
+POWERUP_COLORS = {
+    POWERUP_SPEED_BOOST: (0, 100, 255),  # 파란색
+    POWERUP_SLOW_MOTION: (138, 43, 226),  # 보라색
+    POWERUP_INVINCIBLE: (0, 255, 100)  # 녹색
+}
+
+POWERUP_PROBABILITY = {
+    POWERUP_SPEED_BOOST: 0.05,  # 5%
+    POWERUP_SLOW_MOTION: 0.05,  # 5%
+    POWERUP_INVINCIBLE: 0.03  # 3%
+}
+
+POWERUP_DURATION = 5  # 5초 지속
+POWERUP_SCORE = {
+    POWERUP_SPEED_BOOST: 20,
+    POWERUP_SLOW_MOTION: 20,
+    POWERUP_INVINCIBLE: 30
+}
+
+POWERUP_EFFECTS = {
+    POWERUP_SPEED_BOOST: 1.5,  # 속도 1.5배
+    POWERUP_SLOW_MOTION: 0.7  # 속도 0.7배
+}
+
+# 게임 모드
+MODE_CLASSIC = 'classic'
+MODE_TIME_ATTACK = 'time_attack'
+MODE_SURVIVAL = 'survival'
+MODE_PORTAL = 'portal'
+
+# Time Attack 설정
+TIME_ATTACK_DURATION = 60  # 60초
+TIME_ATTACK_BONUS_TIME = 5  # 시간 보너스 +5초
+
+# Survival 설정
+SURVIVAL_OBSTACLE_INTERVAL = 10  # 10초마다 장애물 추가
+SURVIVAL_MAX_OBSTACLES = 20  # 최대 20개
+
+# 파티클 효과
+PARTICLE_LIFETIME = 30  # 30 프레임
+PARTICLE_COUNT = 10  # 폭발 시 파티클 수
